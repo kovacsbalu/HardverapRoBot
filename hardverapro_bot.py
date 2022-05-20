@@ -45,12 +45,15 @@ class HardverapRoBot:
     def process_ads(self):
         soup = BeautifulSoup(self.site_data, 'html.parser')
         for link in soup.find_all("li", {"class": "media"}):
-            ad = Item(
-                str(link.get('data-uadid')),
-                link.find("div", {"class": "uad-title"}).h1.a.text,
-                link.find("div", {"class": "uad-info"}).find("div", {"class": "uad-price"}).text,
-                str(link.find("div", {"class": "uad-title"}).h1.a.get('href'))
-            )
+            try:
+                ad = Item(
+                    str(link.get('data-uadid')),
+                    link.find("div", {"class": "uad-title"}).h1.a.text,
+                    link.find("div", {"class": "uad-info"}).find("div", {"class": "uad-price"}).text,
+                    str(link.find("div", {"class": "uad-title"}).h1.a.get('href'))
+                )
+            except AttributeError:
+                continue
             if self.not_in_db(ad.adid):
                 print(ad)
                 self.json_db.insert(ad.__dict__)
